@@ -23,6 +23,8 @@ namespace Health_System_API_Spencer_Chapman
         static int experience;
         static int levelUp;
 
+        static bool test;
+
         static void HealthStatus()
         {
             if (health >= 75)
@@ -106,8 +108,11 @@ namespace Health_System_API_Spencer_Chapman
             {
                
             }
-            HealthStatus();
-            Death(); 
+            if (test == false)
+            {
+                HealthStatus();
+                Death();
+            }
         }
         static void Death() //tested
         {
@@ -191,6 +196,8 @@ namespace Health_System_API_Spencer_Chapman
 
         static void UnitTest()
         {
+            test = true;
+
             Console.WriteLine("Testing Heal() respects health <= 100");
             health = 100;
             Heal(10);
@@ -258,6 +265,26 @@ namespace Health_System_API_Spencer_Chapman
             Debug.Assert(health >= 0);
 
             Console.WriteLine();
+            Console.WriteLine("Testing TakeDamage() where health < damage");
+            shield = 0;
+            health = 100;
+            Console.WriteLine("health: " + health + " shield: " + shield);
+            TakeDamage(150);
+            Console.WriteLine("health: " + health + " shield: " + shield);
+            Debug.Assert(shield >= 0);
+            Debug.Assert(health >= 0);
+
+            Console.WriteLine();
+            Console.WriteLine("Testing TakeDamage() where shield + health < damage");
+            shield = 20;
+            health = 100;
+            Console.WriteLine("health: " + health + " shield: " + shield);
+            TakeDamage(150);
+            Console.WriteLine("health: " + health + " shield: " + shield);
+            Debug.Assert(shield >= 0);
+            Debug.Assert(health >= 0);
+
+            Console.WriteLine();
             Console.WriteLine("Testing TakeDamage() error checking (negative damage)");
             shield = 100;
             health = 100;
@@ -290,6 +317,10 @@ namespace Health_System_API_Spencer_Chapman
             Debug.Assert(experience <= 999);
             Debug.Assert(levelUp >= 1001);
 
+            test = false;
+            Console.WriteLine();
+            Console.WriteLine("press any key for fake gameplay");
+            Console.WriteLine();
         }
         static void Main(string[] args)
         {
@@ -305,6 +336,7 @@ namespace Health_System_API_Spencer_Chapman
 
             UnitTest();
 
+            Console.ReadKey(true);
 
             Reset();
 
