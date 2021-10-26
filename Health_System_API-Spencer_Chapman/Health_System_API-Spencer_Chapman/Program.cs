@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace Health_System_API_Spencer_Chapman
 {
@@ -45,13 +46,13 @@ namespace Health_System_API_Spencer_Chapman
                 status = "Dead";
             }
         }
-        static void Heal(int heal)
+        static void Heal(int heal) //tested
         {
             if (heal < 0)
             {
                 heal = 0;
                 health = health + heal;
-                Console.WriteLine("cannot heal negative health");
+                
             }
             else if (heal >= 0)
             {
@@ -64,13 +65,13 @@ namespace Health_System_API_Spencer_Chapman
             }
             HealthStatus();
         }
-        static void ShieldRegen(int regen)
+        static void ShieldRegen(int regen) //tested
         {
             if (regen < 0)
             { 
                 regen = 0;
                 shield = shield + regen;
-                Console.WriteLine("cannot regen negative shield");
+                
             }
             else if (regen >= 0)
             {
@@ -81,7 +82,7 @@ namespace Health_System_API_Spencer_Chapman
                 shield = maxShield;
             }
         }
-        static void TakeDamage(int damage)
+        static void TakeDamage(int damage) //tested
         {
             if (damage >= 0)
             {
@@ -103,12 +104,12 @@ namespace Health_System_API_Spencer_Chapman
             }
             if (damage < 0)
             {
-                Console.WriteLine("cannot add negative damage");
+               
             }
             HealthStatus();
             Death(); 
         }
-        static void Death()
+        static void Death() //tested
         {
             if (health == 0)
             {
@@ -126,7 +127,7 @@ namespace Health_System_API_Spencer_Chapman
                 Console.WriteLine("");  
             }
         }
-        static void GainLife(int add)
+        static void GainLife(int add) //tested
         {
             if (add >= 0)
             {
@@ -134,14 +135,14 @@ namespace Health_System_API_Spencer_Chapman
             }
             if (add < 0)
             {
-                Console.WriteLine("cannot add negative lives");
+                
             }
             if (lives >= 99)
             {
                 lives = 99;
             }    
         }
-        static void XpGain(int xp)
+        static void XpGain(int xp) //tested
         {
             if (xp >= 0)
             {
@@ -150,16 +151,16 @@ namespace Health_System_API_Spencer_Chapman
             }
             if (xp < 0)
             {
-                Console.WriteLine("cannot add negative experience");
+                
             }
         }
-        static void LevelUp()
+        static void LevelUp() //tested
         {
             if (experience >= levelUp)
             {
                 experience = experience - levelUp;
                 level = level + 1;
-                levelUp = levelUp + (levelUp / 4);
+                levelUp = levelUp + (levelUp / 10);
             }
         }
         static void ShowHUD()
@@ -174,6 +175,122 @@ namespace Health_System_API_Spencer_Chapman
             Console.WriteLine("------------------------");
             Console.WriteLine("");
         }
+
+        static void Reset()
+        {
+            name = "Musu";
+            health = 100;
+            maxHealth = 100;
+            shield = 100;
+            maxShield = 100;
+            lives = 3;
+            level = 1;
+            levelUp = 1000;
+            HealthStatus();
+        }
+
+        static void UnitTest()
+        {
+            Console.WriteLine("Testing Heal() respects health <= 100");
+            health = 100;
+            Heal(10);
+            Debug.Assert(health <= 100);
+
+            Console.WriteLine();
+            Console.WriteLine("Testing Heal() error checking (negative heal)");
+            health = 100;
+            Heal(-10);
+            Debug.Assert(health <= 100);
+
+            Console.WriteLine();
+            Console.WriteLine("Testing ShieldRegen() respects shield <= 100");
+            shield = 100;
+            ShieldRegen(10);
+            Debug.Assert(shield <= 100);
+
+            Console.WriteLine();
+            Console.WriteLine("Testing ShieldRegen() error checking (negative heal)");
+            shield = 100;
+            ShieldRegen(-10);
+            Debug.Assert(shield <= 100);
+
+            Console.WriteLine();
+            Console.WriteLine("Testing Death() error checking (negative lives)");
+            lives = 0;
+            Death();
+            Debug.Assert(lives >= 0);
+
+            Console.WriteLine();
+            Console.WriteLine("Testing GainLife() error checking (negative lives)");
+            lives = 0;
+            GainLife(-1);
+            Debug.Assert(lives >= 0);
+
+            Console.WriteLine();
+            Console.WriteLine("Testing GainLife() respects lives <= 99");
+            lives = 99;
+            GainLife(1);
+            Debug.Assert(lives <= 99);
+
+            Console.WriteLine();
+            Console.WriteLine("Testing XpGain() error checking (negative xp)");
+            experience = 0;
+            XpGain(-1);
+            Debug.Assert(experience >= 0);
+
+            Console.WriteLine();
+            Console.WriteLine("Testing TakeDamage() where shield > damage");
+            shield = 100;
+            health = 100;
+            Console.WriteLine("health: " + health + " shield: " + shield);
+            TakeDamage(50);
+            Console.WriteLine("health: " + health + " shield: " + shield);
+            Debug.Assert(shield >= 0);
+
+            Console.WriteLine();
+            Console.WriteLine("Testing TakeDamage() where shield < damage");
+            shield = 100;
+            health = 100;
+            Console.WriteLine("health: " + health + " shield: " + shield);
+            TakeDamage(150);
+            Console.WriteLine("health: " + health + " shield: " + shield);
+            Debug.Assert(shield >= 0);
+            Debug.Assert(health >= 0);
+
+            Console.WriteLine();
+            Console.WriteLine("Testing TakeDamage() error checking (negative damage)");
+            shield = 100;
+            health = 100;
+            Console.WriteLine("health: " + health + " shield: " + shield);
+            TakeDamage(-50);
+            Console.WriteLine("health: " + health + " shield: " + shield);
+            Debug.Assert(shield <= 100);
+            Debug.Assert(health <= 100);
+
+            Console.WriteLine();
+            Console.WriteLine("Testing LevelUp() if experience is high enough, level up ");
+            experience = 1000;
+            levelUp = 1000;
+            level = 1;
+            Console.WriteLine("level: " + level + " experience: " + experience);
+            LevelUp();
+            Console.WriteLine("level: " + level + " experience: " + experience);
+            Debug.Assert(level >= 2);
+            Debug.Assert(experience <=999);
+
+            Console.WriteLine();
+            Console.WriteLine("Testing LevelUp() required experience multiplied by 10% ");
+            experience = 1000;
+            levelUp = 1000;
+            level = 1;
+            Console.WriteLine("level: " + level + " experience: " + experience + " level up: " + levelUp);
+            LevelUp();
+            Console.WriteLine("level: " + level + " experience: " + experience + " level up: " + levelUp);
+            Debug.Assert(level >= 2);
+            Debug.Assert(experience <= 999);
+            Debug.Assert(levelUp >= 1001);
+
+        }
         static void Main(string[] args)
         {
             name = "Musu";
@@ -185,8 +302,11 @@ namespace Health_System_API_Spencer_Chapman
             level = 1;
             levelUp = 1000;
             HealthStatus();
-           
-            Console.WriteLine("test");
+
+            UnitTest();
+
+
+            Reset();
 
             ShowHUD();
             Console.WriteLine("takes 25 damage");
